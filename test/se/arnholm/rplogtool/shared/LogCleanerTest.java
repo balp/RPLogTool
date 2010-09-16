@@ -141,9 +141,33 @@ public class LogCleanerTest {
 	public void testPlayers() {
 		LogCleaner log = new LogCleaner(testLog);
 		Set<String> who = log.getPartisipants(); 
-		System.out.println("Test:" + who);
+//		System.out.println("Test:" + who);
 		assertTrue("Nadine should be in set", who.contains("Nadine Nozaki"));
 		assertEquals(11262000, log.getPlayerInfo("Nadine Nozaki").getFirstTime());
+		assertEquals(11631000, log.getPlayerInfo("Nadine Nozaki").getLastTime());
+		Duration d = log.getPlayerInfo("Nadine Nozaki").getDuration();
+		assertEquals(369000, d.getMillis());
+		System.out.println("Nads: " + d.toPeriod().getHours() + ":" + d.toPeriod().getMinutes() + " "
+				+ log.getPlayerInfo("Nadine Nozaki").getLines());
+		assertEquals(9, log.getPlayerInfo("Nadine Nozaki").getNumberOfLines());	
+	}
+	@Test
+	public void testTimeFormat() {
+		LogCleaner log = new LogCleaner(testLog);
+		assertEquals("0:06", LogCleaner.formatTime(log.getPlayerInfo("Nadine Nozaki").getDuration()));
+	}
+	
+	@Test
+	public void testGetPLayerName() {
+		assertEquals("Nadine Nozaki",
+				LogCleaner.getPlayerName("[03:07:42]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\"\n"));
+		assertEquals("Nadine Nozaki",
+				LogCleaner.getPlayerName("[03:10:01]  Nadine Nozaki's smile leaves her fance.\n"));
+		assertEquals("Nadine Nozaki",
+				LogCleaner.getPlayerName("[03:10:13]  Nadine Nozaki: I thoulg you was going to excuse..\n"));
+	
+	
+		 
 	}
 
 }

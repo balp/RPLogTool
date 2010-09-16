@@ -38,6 +38,7 @@ public class LogCleaner {
 		
 		try {
 			while((str = reader.readLine()) != null) {
+				System.out.println("In: " + str);
 				if(online.matcher(str).find()) {
 					continue;
 				}
@@ -54,6 +55,7 @@ public class LogCleaner {
 					freq.addLine(str);
 					players.put(who, freq);
 				}
+				System.out.println("Adding:" + who + ":" + str);
 				lines.add(str);
 				result += str + "\n";
 			}
@@ -63,8 +65,8 @@ public class LogCleaner {
 		return result;
 	}
 
-	private String getPlayerName(String str) {
-		Pattern name = Pattern.compile("\\[[\\d:]+\\]\\s+(\\w+\\s+\\w+)\\s+");
+	public static String getPlayerName(String str) {
+		Pattern name = Pattern.compile("\\[[\\d:]+\\]\\s+(\\w+\\s+\\w+)[\\s+':]");
 		Matcher matcher = name.matcher(str);
 		if(matcher.find()) {
 			return matcher.group(1);
@@ -112,6 +114,10 @@ public class LogCleaner {
 
 	public PlayerInfo getPlayerInfo(String name) {
 		return players.get(name);
+	}
+
+	public static String formatTime(Duration duration) {
+		return String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
 	}
 
 }

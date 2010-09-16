@@ -3,6 +3,8 @@ package se.arnholm.rplogtool.server;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.appengine.repackaged.org.joda.time.Duration;
+
 public class PlayerInfo {
 	
 
@@ -22,9 +24,11 @@ public class PlayerInfo {
 		lines.add(line);
 		long time = LogCleaner.getTime(line);
 		if(time < first) {
+//			System.out.println("addLine("+ line +"): first = " + time);
 			first = time;
 		}
 		if(time > last) {
+//			System.out.println("addLine("+ line +"): last = " + time);
 			last = time;
 		}
 		
@@ -35,6 +39,22 @@ public class PlayerInfo {
 
 	public long getFirstTime() {
 		return first;
+	}
+
+	public long getLastTime() {
+		return last;
+	}
+
+	public Duration getDuration() {
+		return new Duration(getFirstTime(), getLastTime());
+	}
+
+	public int getNumberOfLines() {
+		return lines.size();
+	}
+
+	public List<String> getLines() {
+		return lines;
 	}
 
 }

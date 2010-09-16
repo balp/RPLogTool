@@ -3,6 +3,7 @@ package se.arnholm.rplogtool.shared;
 import static org.junit.Assert.*;
 
 import java.util.Set;
+import java.util.Vector;
 
 import org.junit.Test;
 
@@ -164,9 +165,22 @@ public class LogCleanerTest {
 				LogCleaner.getPlayerName("[03:10:01]  Nadine Nozaki's smile leaves her fance.\n"));
 		assertEquals("Nadine Nozaki",
 				LogCleaner.getPlayerName("[03:10:13]  Nadine Nozaki: I thoulg you was going to excuse..\n"));
+	}
 	
-	
-		 
+	@Test
+	public void testLineSplit() {
+		helpTestLineSplit("[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\"", 
+				"03:07", "Nadine Nozaki", " ndos, \"Aint we all but Xerx human?\"");
+		helpTestLineSplit("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you", 
+				"2010-09-15 23:05:03", "Xerxis Rodenberger", ": See you");
+	}
+
+	private void helpTestLineSplit(String line, String time, String name, String pose) {
+		Vector<String> s1 = LogCleaner.splitLine(line);
+		assertNotNull("Unable to split: " + line, s1);
+		assertEquals(time, s1.elementAt(0));
+		assertEquals(name, s1.elementAt(1));
+		assertEquals(pose, s1.elementAt(2));
 	}
 
 }

@@ -17,7 +17,11 @@ public class LogCleaner {
 	private String cleanString;
 	private Vector<String> lines;
 	private Map<String,PlayerInfo> players;
-
+	private static final Pattern LINE_SPLIT = Pattern.compile("^\\s*\\[(.+)\\]\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
+	private static final Pattern TIME_SECONDS = Pattern.compile("(\\d+):(\\d+):(\\d+)");
+	private static final Pattern TIME_MINUTES = Pattern.compile("(\\d+):(\\d+)");
+	
+	
 	public LogCleaner(String text)
 	{
 		lines = new Vector<String>();
@@ -66,10 +70,9 @@ public class LogCleaner {
 	}
 
 	public static String getPlayerName(String str) {
-		Pattern name = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+(\\w+\\s+\\w+)[\\s+':]");
-		Matcher matcher = name.matcher(str);
-		if(matcher.find()) {
-			return matcher.group(1);
+		Vector<String> values = splitLine(str);
+		if(null != values) {
+			return values.get(1);
 		}
 		return null;
 	}
@@ -86,45 +89,24 @@ public class LogCleaner {
 	}
 
 	public static long getTime(String logLine) {
-		Pattern timeMinutes = Pattern.compile("\\[(\\d+):(\\d+)\\]");
-		Matcher matchMinutes = timeMinutes.matcher(logLine);
-//		System.out.println(logLine + ":match?");
-		if(matchMinutes.find()) {
-			long hour = Long.parseLong(matchMinutes.group(1));
-			long minutes = Long.parseLong(matchMinutes.group(2));
-//			System.out.println(logLine + ":" + hour + ":" +minutes);
-			return (((hour * 60 * 60) + (minutes*60) + 0) * 1000);
+		Vector<String> values = splitLine(logLine);
+		if(null != values) {
+			String time = values.get(0);
+			Matcher matchSeconds = TIME_SECONDS.matcher(time);
+			if(matchSeconds.find()) {
+				long hour = Long.parseLong(matchSeconds.group(1));
+				long minutes = Long.parseLong(matchSeconds.group(2));
+				long seconds = Long.parseLong(matchSeconds.group(3));
+				return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
+			}
+			Matcher matchMinutes = TIME_MINUTES.matcher(time);
+			if(matchMinutes.find()) {
+				long hour = Long.parseLong(matchMinutes.group(1));
+				long minutes = Long.parseLong(matchMinutes.group(2));
+				return (((hour * 60 * 60) + (minutes*60) + 0) * 1000);
+			}
 		}
-		Pattern timeSeconds = Pattern.compile("\\[(\\d+):(\\d+):(\\d+)\\]");
-		Matcher matchSeconds = timeSeconds.matcher(logLine);
-		if(matchSeconds.find()) {
-//			System.out.println(logLine + ":" );
-			long hour = Long.parseLong(matchSeconds.group(1));
-			long minutes = Long.parseLong(matchSeconds.group(2));
-			long seconds = Long.parseLong(matchSeconds.group(3));
-//			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
-			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
-		}
-		Pattern timeDate = Pattern.compile("\\[[\\d-]+\\s(\\d+):(\\d+)\\]");
-		Matcher matchDate = timeDate.matcher(logLine);
-		if(matchDate.find()) {
-//			System.out.println(logLine + ":" );
-			long hour = Long.parseLong(matchDate.group(1));
-			long minutes = Long.parseLong(matchDate.group(2));
-			long seconds = 0;
-//			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
-			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
-		}
-		Pattern timeDateSecond = Pattern.compile("\\[[\\d-]+\\s(\\d+):(\\d+):(\\d+)\\]");
-		Matcher matchDateSecond = timeDateSecond.matcher(logLine);
-		if(matchDateSecond.find()) {
-//			System.out.println(logLine + ":" );
-			long hour = Long.parseLong(matchDateSecond.group(1));
-			long minutes = Long.parseLong(matchDateSecond.group(2));
-			long seconds = Long.parseLong(matchDateSecond.group(3));
-//			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
-			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
-		}
+
 		return 0;
 	}
 
@@ -138,6 +120,19 @@ public class LogCleaner {
 
 	public static String formatTime(Duration duration) {
 		return String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
+	}
+
+	public static Vector<String> splitLine(String line) {
+		
+		Matcher matcher = LINE_SPLIT.matcher(line);
+		if(matcher.find()) {
+			Vector<String> res = new Vector<String>();
+			res.add(matcher.group(1));
+			res.add(matcher.group(2));
+			res.add(matcher.group(3));
+			return res;
+		}
+		return null;
 	}
 
 }

@@ -132,9 +132,8 @@ public class LogCleanerTest {
 	
 	@Test
 	public void testGetTime() {
-		String line = "[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\"";
-		long time = LogCleaner.getTime(line);
-		assertEquals(11220000, time);
+		assertEquals(11220000, LogCleaner.getTime("[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\""));
+		assertEquals(83103000, LogCleaner.getTime("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you"));
 	}
 	
 	@Test

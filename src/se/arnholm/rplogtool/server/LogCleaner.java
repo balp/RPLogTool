@@ -33,12 +33,12 @@ public class LogCleaner {
 		BufferedReader reader = new BufferedReader(
 				  new StringReader(text));
 		String str;
-		Pattern online = Pattern.compile("\\[[\\d:]+\\]\\s+\\S+\\s+\\S+ is Online");
-		Pattern offline = Pattern.compile("\\[[\\d:]+\\]\\s+\\S+\\s+\\S+ is Offline");
+		Pattern online = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+\\S+\\s+\\S+ is Online");
+		Pattern offline = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+\\S+\\s+\\S+ is Offline");
 		
 		try {
 			while((str = reader.readLine()) != null) {
-				System.out.println("In: " + str);
+//				System.out.println("In: " + str);
 				if(online.matcher(str).find()) {
 					continue;
 				}
@@ -55,7 +55,7 @@ public class LogCleaner {
 					freq.addLine(str);
 					players.put(who, freq);
 				}
-				System.out.println("Adding:" + who + ":" + str);
+//				System.out.println("Adding:" + who + ":" + str);
 				lines.add(str);
 				result += str + "\n";
 			}
@@ -66,7 +66,7 @@ public class LogCleaner {
 	}
 
 	public static String getPlayerName(String str) {
-		Pattern name = Pattern.compile("\\[[\\d:]+\\]\\s+(\\w+\\s+\\w+)[\\s+':]");
+		Pattern name = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+(\\w+\\s+\\w+)[\\s+':]");
 		Matcher matcher = name.matcher(str);
 		if(matcher.find()) {
 			return matcher.group(1);
@@ -102,6 +102,26 @@ public class LogCleaner {
 			long hour = Long.parseLong(matchSeconds.group(1));
 			long minutes = Long.parseLong(matchSeconds.group(2));
 			long seconds = Long.parseLong(matchSeconds.group(3));
+//			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
+			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
+		}
+		Pattern timeDate = Pattern.compile("\\[[\\d-]+\\s(\\d+):(\\d+)\\]");
+		Matcher matchDate = timeDate.matcher(logLine);
+		if(matchDate.find()) {
+//			System.out.println(logLine + ":" );
+			long hour = Long.parseLong(matchDate.group(1));
+			long minutes = Long.parseLong(matchDate.group(2));
+			long seconds = 0;
+//			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
+			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
+		}
+		Pattern timeDateSecond = Pattern.compile("\\[[\\d-]+\\s(\\d+):(\\d+):(\\d+)\\]");
+		Matcher matchDateSecond = timeDateSecond.matcher(logLine);
+		if(matchDateSecond.find()) {
+//			System.out.println(logLine + ":" );
+			long hour = Long.parseLong(matchDateSecond.group(1));
+			long minutes = Long.parseLong(matchDateSecond.group(2));
+			long seconds = Long.parseLong(matchDateSecond.group(3));
 //			System.out.println(logLine + ":" + hour + ":" +minutes + ":" + seconds);
 			return (((hour * 60 * 60) + (minutes*60) + seconds) * 1000);
 		}

@@ -3,7 +3,7 @@ package se.arnholm.rplogtool.server;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.appengine.repackaged.org.joda.time.Duration;
+import org.joda.time.Duration;
 
 public class PlayerInfo {
 	

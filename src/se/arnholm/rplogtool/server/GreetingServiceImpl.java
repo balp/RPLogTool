@@ -3,8 +3,6 @@ package se.arnholm.rplogtool.server;
 import java.util.Set;
 
 import se.arnholm.rplogtool.client.GreetingService;
-import se.arnholm.rplogtool.shared.FieldVerifier;
-
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -31,11 +29,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		
 		String result = "Roleplay Log:<br>";
 		result += "----------------------------------------------------------------<br>\n";
+		result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"<br>\n";
 		Set<String> players = cleaner.getPartisipants();
 		for(String player: players) {
 			PlayerInfo info = cleaner.getPlayerInfo(player);
-//			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"<br>\n"; 
-			result += player + ": " +"<br>\n"; 
+			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"<br>\n"; 
+//			result += player + ": " +"<br>\n"; 
 		}
 		result += "----------------------------------------------------------------<br>\n";
 		result += log; 

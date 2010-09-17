@@ -10,7 +10,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.appengine.repackaged.org.joda.time.Duration;
+import org.joda.time.Duration;
 
 public class LogCleaner {
 	private String text;
@@ -18,6 +18,7 @@ public class LogCleaner {
 	private Vector<String> lines;
 	private Map<String,PlayerInfo> players;
 	private static final Pattern LINE_SPLIT = Pattern.compile("^\\s*\\[(.+)\\]\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
+	private static final Pattern CCS_LINE_SPLIT = Pattern.compile("^\\s*\\[(.+)\\]\\s+CCS - MTR - 1.0.2:\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
 	private static final Pattern TIME_SECONDS = Pattern.compile("(\\d+):(\\d+):(\\d+)");
 	private static final Pattern TIME_MINUTES = Pattern.compile("(\\d+):(\\d+)");
 	
@@ -85,6 +86,10 @@ public class LogCleaner {
 	public Duration getDuration() {
 		long start = getTime(lines.firstElement());
 		long end = getTime(lines.lastElement());
+	 	
+		System.out.println("Duration between: " +start +":"+ lines.firstElement());
+		System.out.println("             and: " + end +":"+ lines.lastElement());
+
 		return new Duration(start, end);
 	}
 
@@ -118,12 +123,20 @@ public class LogCleaner {
 		return players.get(name);
 	}
 
-	public static String formatTime(Duration duration) {
+	public static String formatTime(org.joda.time.Duration duration) {
 		return String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
 	}
 
 	public static Vector<String> splitLine(String line) {
-		
+		Matcher ccs = CCS_LINE_SPLIT.matcher(line);
+		if(ccs.find()) {
+			Vector<String> res = new Vector<String>();
+			res.add(ccs.group(1));
+			res.add(ccs.group(2));
+			res.add(ccs.group(3));
+			return res;
+			
+		}
 		Matcher matcher = LINE_SPLIT.matcher(line);
 		if(matcher.find()) {
 			Vector<String> res = new Vector<String>();
@@ -132,6 +145,7 @@ public class LogCleaner {
 			res.add(matcher.group(3));
 			return res;
 		}
+		
 		return null;
 	}
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import se.arnholm.rplogtool.server.LogCleaner;
 
-import com.google.appengine.repackaged.org.joda.time.Duration;
+import org.joda.time.Duration;
 
 public class LogCleanerTest {
 
@@ -130,11 +130,17 @@ public class LogCleanerTest {
 		Duration expected = new Duration(431000);
 		assertEquals(expected.getMillis(), log.getDuration().getMillis());
 	}
-	
+	@Test
+	public void testDuration2() {
+		LogCleaner log = new LogCleaner(log2);
+		Duration expected = new Duration(1828000);
+		assertEquals(expected.getMillis(), log.getDuration().getMillis());
+	}	
 	@Test
 	public void testGetTime() {
 		assertEquals(11220000, LogCleaner.getTime("[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\""));
 		assertEquals(83103000, LogCleaner.getTime("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you"));
+		assertEquals(81275000, LogCleaner.getTime("[2010-09-15 22:34:35]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state\n"));
 	}
 	
 	@Test
@@ -149,7 +155,7 @@ public class LogCleanerTest {
 		assertEquals(369000, d.getMillis());
 		System.out.println("Nads: " + d.toPeriod().getHours() + ":" + d.toPeriod().getMinutes() + " "
 				+ log.getPlayerInfo("Nadine Nozaki").getLines());
-		assertEquals(9, log.getPlayerInfo("Nadine Nozaki").getNumberOfLines());	
+		assertEquals(10, log.getPlayerInfo("Nadine Nozaki").getNumberOfLines());	
 	}
 	@Test
 	public void testTimeFormat() {
@@ -173,6 +179,9 @@ public class LogCleanerTest {
 				"03:07", "Nadine Nozaki", " ndos, \"Aint we all but Xerx human?\"");
 		helpTestLineSplit("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you", 
 				"2010-09-15 23:05:03", "Xerxis Rodenberger", ": See you");
+		
+		helpTestLineSplit("[2010-09-15 22:34:35]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state",
+				"2010-09-15 22:34:35", "Nadine Nozaki"," has entered a combative state");
 	}
 
 	private void helpTestLineSplit(String line, String time, String name, String pose) {
@@ -182,5 +191,53 @@ public class LogCleanerTest {
 		assertEquals(name, s1.elementAt(1));
 		assertEquals(pose, s1.elementAt(2));
 	}
+	
+	String log2 = 
+		"[2010-09-15 22:34:35]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state\n" +
+"[2010-09-15 22:34:40]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a non-combative state\n" +
+"[2010-09-15 22:34:57]  BeoWulf Foxtrot is Offline\n" +
+"[2010-09-15 22:35:15]  Selene Weatherwax is Offline\n" +
+"[2010-09-15 22:35:24]  Jo Soosung is Offline\n" +
+"[2010-09-15 22:36:05]  Rondevous Giano is Offline\n" +
+"[2010-09-15 22:37:21]  BeoWulf Foxtrot is Online\n" +
+"[2010-09-15 22:39:31]  Kommandant Epin is Offline\n" +
+"[2010-09-15 22:39:33]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state\n" +
+"[2010-09-15 22:39:41]  Nadine Nozaki steals a wet kiss\n" +
+"[2010-09-15 22:39:52]  Erosid Dryke is Online\n" +
+"[2010-09-15 22:40:13]  Selene Weatherwax is Online\n" +
+"[2010-09-15 22:42:17]  BeoWulf Foxtrot is Offline\n" +
+"[2010-09-15 22:45:30]  BeoWulf Foxtrot is Online\n" +
+"[2010-09-15 22:47:20]  MoonGypsy Writer is Offline\n" +
+"[2010-09-15 22:48:50]  Skye Hanfoi is Offline\n" +
+"[2010-09-15 22:49:15]  KittyDarling Zelnik is Offline\n" +
+"[2010-09-15 22:49:24]  Traven Sachs is Offline\n" +
+"[2010-09-15 22:49:49]  McCabe Maxsted is Offline\n" +
+"[2010-09-15 22:50:08]  Valmont1985 Radek is Offline\n" +
+"[2010-09-15 22:50:26]  Xerxis Rodenberger kisses back passionately\n" +
+"[2010-09-15 22:50:34]  Skye Hanfoi is Online\n" +
+"[2010-09-15 22:50:40]  Voodoo Halostar is Offline\n" +
+"[2010-09-15 22:51:10]  Voodoo Halostar is Online\n" +
+"[2010-09-15 22:53:57]  Imogen Aeon is Offline\n" +
+"[2010-09-15 22:54:29]  Pethonia Baxton is Offline\n" +
+"[2010-09-15 22:57:26]  Nadine Nozaki: OMG OMG\n" +
+"[2010-09-15 22:57:33]  Nadine Nozaki: Drama?\n" +
+"[2010-09-15 22:57:33]  Nadine Nozaki: OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG! OMG!\n" +
+"[2010-09-15 22:57:56]  Xerxis Rodenberger: Whats wrong?\n" +
+"[2010-09-15 22:58:01]  Nadine Nozaki: RUN TIME\n" +
+"[2010-09-15 22:58:05]  Xerxis Rodenberger: *cries*\n" +
+"[2010-09-15 22:58:06]  Nadine Nozaki: Serius wrong imho\n" +
+"[2010-09-15 22:58:28]  Sparklin Indigo is Online\n" +
+"[2010-09-15 22:58:44]  Xerxis Rodenberger: mmhmm\n" +
+"[2010-09-15 22:59:02]  Wezab Ember is Online\n" +
+"[2010-09-15 23:00:08]  Alix Lectar is Offline\n" +
+"[2010-09-15 23:01:08]  Nadine Nozaki: Love you my girl,\n" +
+"[2010-09-15 23:01:24]  Xerxis Rodenberger: Love you Mistress. Have a great day\n" +
+"[2010-09-15 23:01:41]  Nadine Nozaki: u 2 :D\n" +
+"[2010-09-15 23:02:06]  Xerxis Rodenberger kisses and snuggles\n" +
+"[2010-09-15 23:02:17]  Gaea Singh is Offline\n" +
+"[2010-09-15 23:03:22]  Gino Byron is Online\n" +
+"[2010-09-15 23:04:47]  Nadine Nozaki: See you tonight love\n" +
+"[2010-09-15 23:04:53]  Nadine Nozaki: I hgave to get going...\n" +
+"[2010-09-15 23:05:03]  Xerxis Rodenberger: See you\n";
 
 }

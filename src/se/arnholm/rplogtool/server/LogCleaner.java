@@ -38,20 +38,24 @@ public class LogCleaner {
 		BufferedReader reader = new BufferedReader(
 				  new StringReader(text));
 		String str;
-		Pattern online = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+\\S+\\s+\\S+ is Online");
-		Pattern offline = Pattern.compile("\\[[\\d-\\s:]+\\]\\s+\\S+\\s+\\S+ is Offline");
 		
 		try {
 			while((str = reader.readLine()) != null) {
-//				System.out.println("In: " + str);
-				if(online.matcher(str).find()) {
+
+				RpLogLine line = splitLine(str);
+				final String action = line.getAction();
+				if(line.isCCS()) {
+					System.out.println("In:\"" + str+ "\"");
+					System.out.println("action:\"" + action+ "\"");
+				}
+				if(action.equals(" is Online")) {
 					continue;
 				}
-				if(offline.matcher(str).find()) {
+				if(action.equals(" is Offline")) {
 					continue;
 				}
-				
-				String who = getPlayerName(str);
+//				System.out.println("...");
+				String who = line.getName();
 				if(who != null) {
 					PlayerInfo freq = players.get(who);
 					if(null == freq) {
@@ -71,9 +75,9 @@ public class LogCleaner {
 	}
 
 	public static String getPlayerName(String str) {
-		Vector<String> values = splitLine(str);
+		RpLogLine values = splitLine(str);
 		if(null != values) {
-			return values.get(1);
+			return values.getName();
 		}
 		return null;
 	}
@@ -94,9 +98,9 @@ public class LogCleaner {
 	}
 
 	public static long getTime(String logLine) {
-		Vector<String> values = splitLine(logLine);
+		RpLogLine values = splitLine(logLine);
 		if(null != values) {
-			String time = values.get(0);
+			String time = values.getTime();
 			Matcher matchSeconds = TIME_SECONDS.matcher(time);
 			if(matchSeconds.find()) {
 				long hour = Long.parseLong(matchSeconds.group(1));
@@ -127,22 +131,17 @@ public class LogCleaner {
 		return String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
 	}
 
-	public static Vector<String> splitLine(String line) {
+	public static RpLogLine splitLine(String line) {
 		Matcher ccs = CCS_LINE_SPLIT.matcher(line);
 		if(ccs.find()) {
-			Vector<String> res = new Vector<String>();
-			res.add(ccs.group(1));
-			res.add(ccs.group(2));
-			res.add(ccs.group(3));
+			RpLogLine res = new RpLogLine(ccs.group(1), ccs.group(2), ccs.group(3), true);
 			return res;
 			
 		}
 		Matcher matcher = LINE_SPLIT.matcher(line);
 		if(matcher.find()) {
-			Vector<String> res = new Vector<String>();
-			res.add(matcher.group(1));
-			res.add(matcher.group(2));
-			res.add(matcher.group(3));
+			RpLogLine res = new RpLogLine(matcher.group(1), matcher.group(2),
+					matcher.group(3), false);
 			return res;
 		}
 		

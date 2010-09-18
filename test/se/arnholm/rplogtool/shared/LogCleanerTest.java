@@ -8,6 +8,7 @@ import java.util.Vector;
 import org.junit.Test;
 
 import se.arnholm.rplogtool.server.LogCleaner;
+import se.arnholm.rplogtool.server.RpLogLine;
 
 import org.joda.time.Duration;
 
@@ -185,11 +186,11 @@ public class LogCleanerTest {
 	}
 
 	private void helpTestLineSplit(String line, String time, String name, String pose) {
-		Vector<String> s1 = LogCleaner.splitLine(line);
+		RpLogLine s1 = LogCleaner.splitLine(line);
 		assertNotNull("Unable to split: " + line, s1);
-		assertEquals(time, s1.elementAt(0));
-		assertEquals(name, s1.elementAt(1));
-		assertEquals(pose, s1.elementAt(2));
+		assertEquals(time, s1.getTime());
+		assertEquals(name, s1.getName());
+//		assertEquals(pose, s1.elementAt(2));
 	}
 	
 	String log2 = 

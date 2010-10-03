@@ -93,7 +93,6 @@ public class LogCleanerTest {
 		"[03:11:37]  Samantha Linnaeus sees the sudden attack out of the corner of her eye, \"Goodness!\"\n" +
 		"[03:11:41]  Monfang Snowpaw shakes his head. \"Really, you have to do better than that.\"\n" +
 		"[03:11:49]  Nadine Nozaki stats pulling the wolf form the bar.\n" +
-		"[03:12:19]  Nadine Nozaki: (( just follow please))\n" +
 		"[03:12:38]  serendipity Savira pats the bar stool next to her and whispers to Sam, \"Come and sit\"\n" +
 		"[03:12:47]  Samantha Linnaeus' eyes are wide, \"How have you been Seren?\"\n" +
 		"[03:12:57]  CCS - MTR - 1.0.2: You have called for GM assistance\n" +
@@ -113,6 +112,7 @@ public class LogCleanerTest {
 		//		fail("Not yet implemented");
 	}
 	
+	
 	@Test
 	public void testCleanLog2() {
 		String text = "[03:07:42]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\"\n" +
@@ -123,6 +123,64 @@ public class LogCleanerTest {
 		String cleaned = log.getClean();
 		assertEquals(expected, cleaned);
 		//		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testClean3() {
+		String text = "[2010-10-02 11:27:33]  charlie75 Arcana mutters probably elvies\n"+
+		"[2010-10-02 11:27:33]  (empty) Ravenal Ashby(en>>sv): \"BRB))\"\n"+
+		"[2010-10-02 11:27:38]  Nadine Nozaki: Me looks arouns Carefull there is a sniper out\n"+
+		"[2010-10-02 11:27:46]  (empty) charlie75 Arcana(en>>sv): \"/ Me Mutters förmodligen elvies\"\n";
+		String expected = "[2010-10-02 11:27:33]  charlie75 Arcana mutters probably elvies\n"+
+		"[2010-10-02 11:27:38]  Nadine Nozaki: Me looks arouns Carefull there is a sniper out\n";
+		LogCleaner log = new LogCleaner(text);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
+	@Test
+	public void testClean4() {
+		String text = "[2010-10-02 1:41:05]  CCS - MTR - 1.0.2: CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.\n"+
+		"[2010-10-02 11:41:37]  Draw distance set to: 0m\n"+
+		"[2010-10-02 11:41:38]  Draw distance set to: 10m\n"+
+		"[2010-10-02 11:41:42]  Draw distance set to: 20m\n"+
+		"[2010-10-02 11:41:54]  Xerxis Rodenberger: Oh here you are. I lost you\n";
+		String expected = "[2010-10-02 11:41:54]  Xerxis Rodenberger: Oh here you are. I lost you\n";
+		LogCleaner log = new LogCleaner(text);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
+	@Test
+	public void testClean5() {
+		String text = "[2010-10-02 12:02:43]  Nadine Nozaki bends down picking up a nail, and the hammer, \"So you confess of attepted murder,\"\n"
+				+ "[2010-10-02 12:02:45]  Taylor Renegade is Offline\n"
+				+ "[2010-10-02 12:02:48]  Xerxis Rodenberger: (( mine are all outdated))\n"
+				+ "[2010-10-02 12:03:00]  Varthaer Darkmatter declined your inventory offer.\n";
+		String expected = "[2010-10-02 12:02:43]  Nadine Nozaki bends down picking up a nail, and the hammer, \"So you confess of attepted murder,\"\n";
+		LogCleaner log = new LogCleaner(text);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
+	
+	@Test
+	public void testClean6AndTime() {
+		String text = "[2010-09-26 13:54:09]  Xerxis Rodenberger: I'm right a tiny bit sleepy already, Mistress\n" +
+			"[2010-09-26 13:54:16]  charlie75 Arcana hello\n" +
+			"[2010-09-26 13:54:18]  Xerxis Rodenberger: Oh Hai\n" +
+			"[2010-09-26 13:54:21]  Sev Laval is Offline\n" +
+			"[2010-09-26 13:54:34]  Sev Laval is Online\n" +
+			"[2010-09-26 13:54:57]  Nadine Nozaki smiles, \"How do you feel...\"\n" +
+			"[2010-09-26 13:55:17]  charlie75 Arcana me?\n" +
+			"[2010-09-26 13:55:28]  Abal Azambuja is Offline\n" +
+			"[2010-09-26 13:55:35]  charlie75 Arcana accepted your inventory offer.\n";
+		
+			String expected = "[2010-09-26 13:54:09]  Xerxis Rodenberger: I'm right a tiny bit sleepy already, Mistress\n" +
+			"[2010-09-26 13:54:16]  charlie75 Arcana hello\n" +
+			"[2010-09-26 13:54:18]  Xerxis Rodenberger: Oh Hai\n" +
+			"[2010-09-26 13:54:57]  Nadine Nozaki smiles, \"How do you feel...\"\n" +
+			"[2010-09-26 13:55:17]  charlie75 Arcana me?\n";
+		LogCleaner log = new LogCleaner(text);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
 	}
 	
 	@Test
@@ -156,7 +214,7 @@ public class LogCleanerTest {
 		assertEquals(369000, d.getMillis());
 		System.out.println("Nads: " + d.toPeriod().getHours() + ":" + d.toPeriod().getMinutes() + " "
 				+ log.getPlayerInfo("Nadine Nozaki").getLines());
-		assertEquals(10, log.getPlayerInfo("Nadine Nozaki").getNumberOfLines());	
+		assertEquals(9, log.getPlayerInfo("Nadine Nozaki").getNumberOfLines());	
 	}
 	@Test
 	public void testTimeFormat() {
@@ -178,11 +236,35 @@ public class LogCleanerTest {
 	public void testLineSplit() {
 		helpTestLineSplit("[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\"", 
 				"03:07", "Nadine Nozaki", " ndos, \"Aint we all but Xerx human?\"");
+		
 		helpTestLineSplit("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you", 
-				"2010-09-15 23:05:03", "Xerxis Rodenberger", ": See you");
+				"2010-09-15 23:05:03", "Xerxis Rodenberger", "See you");
 		
 		helpTestLineSplit("[2010-09-15 22:34:35]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state",
 				"2010-09-15 22:34:35", "Nadine Nozaki"," has entered a combative state");
+
+		helpTestLineSplit("[2010-10-02 11:27:25]  (empty) Bunny Yakubu(en>>sv): \"/ Me flinar \"ohhh jag älskar ormar\" Hon fnittrar som en orm ringlar bedriver synes runt henne\"\n",
+				"2010-10-02 11:27:25", "(empty) Bunny Yakubu(en>>sv)",
+				"\"/ Me flinar \"ohhh jag älskar ormar\" Hon fnittrar som en orm ringlar bedriver synes runt henne\"");
+
+		helpTestLineSplit("[2010-10-02 1:41:05]  CCS - MTR - 1.0.2: CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.\n",
+				"2010-10-02 1:41:05", "CCS SYSTEM", 
+				" MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.");
+		
+		helpTestLineSplit("[2010-10-02 11:41:37]  Draw distance set to: 0m\n",
+				"2010-10-02 11:41:37", "Draw distance set to", "0m");
+	}
+	
+	@Test
+	public void testCCSLine() {
+		RpLogLine s1 = LogCleaner.splitLine("[2010-10-02 1:41:05]  CCS - MTR - 1.0.2: CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.\n");
+		assertNotNull("Unable to split: " + "[2010-10-02 1:41:05]  CCS - MTR - 1.0.2: CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.\n", s1);
+		assertEquals("2010-10-02 1:41:05", s1.getTime());
+		assertEquals("CCS SYSTEM", s1.getName());
+		assertEquals(" MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.", s1.getAction());
+		assertTrue(s1.isCCS());
+		assertEquals("CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.", s1.getCCSText());
+		
 	}
 
 	private void helpTestLineSplit(String line, String time, String name, String pose) {
@@ -190,7 +272,7 @@ public class LogCleanerTest {
 		assertNotNull("Unable to split: " + line, s1);
 		assertEquals(time, s1.getTime());
 		assertEquals(name, s1.getName());
-//		assertEquals(pose, s1.elementAt(2));
+		assertEquals(pose, s1.getAction());
 	}
 	
 	String log2 = 

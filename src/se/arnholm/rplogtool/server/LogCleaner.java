@@ -17,8 +17,9 @@ public class LogCleaner {
 	private String cleanString;
 	private Vector<String> lines;
 	private Map<String,PlayerInfo> players;
-	private static final Pattern LINE_SPLIT = Pattern.compile("^\\s*\\[(.+)\\]\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
-	private static final Pattern CCS_LINE_SPLIT = Pattern.compile("^\\s*\\[(.+)\\]\\s+CCS - MTR - 1.0.2:\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
+	private static final Pattern LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
+	private static final Pattern LONGNAME_LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+([^:]+):\\s*(.+)$");
+	private static final Pattern CCS_LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+CCS - MTR - 1.0.2:\\s+((\\w+\\s+\\w+)([\\s+':].+))$");
 	private static final Pattern TIME_SECONDS = Pattern.compile("(\\d+):(\\d+):(\\d+)");
 	private static final Pattern TIME_MINUTES = Pattern.compile("(\\d+):(\\d+)");
 	
@@ -44,18 +45,38 @@ public class LogCleaner {
 
 				RpLogLine line = splitLine(str);
 				final String action = line.getAction();
-				if(line.isCCS()) {
-					System.out.println("In:\"" + str+ "\"");
-					System.out.println("action:\"" + action+ "\"");
-				}
+//				if(line.isCCS()) {
+//					System.out.println("In:\"" + str+ "\"");
+//					System.out.println("action:\"" + action+ "\"");
+//				}
 				if(action.equals(" is Online")) {
 					continue;
 				}
 				if(action.equals(" is Offline")) {
 					continue;
 				}
+				if(line.isCCS()) {
+					if(line.getCCSText().startsWith("CCS SYSTEM MESSAGE:")) {
+						continue;
+					}
+				}
+				if(line.getAction().startsWith("((") && line.getAction().endsWith("))")) {
+					continue;
+				}
+				if(line.getAction().startsWith(" declined your inventory offer.")) {
+					continue;
+				}
+				if(line.getAction().startsWith(" accepted your inventory offer.")) {
+					continue;
+				}
 //				System.out.println("...");
 				String who = line.getName();
+				if(who.startsWith("(empty)")) {
+					continue;
+				}
+				if(who.equals("Draw distance set to")) {
+					continue;
+				}
 				if(who != null) {
 					PlayerInfo freq = players.get(who);
 					if(null == freq) {
@@ -132,18 +153,37 @@ public class LogCleaner {
 	}
 
 	public static RpLogLine splitLine(String line) {
-		Matcher ccs = CCS_LINE_SPLIT.matcher(line);
-		if(ccs.find()) {
-			RpLogLine res = new RpLogLine(ccs.group(1), ccs.group(2), ccs.group(3), true);
-			return res;
-			
+		{
+			Matcher matcher = CCS_LINE_SPLIT.matcher(line);
+			if (matcher.find()) {
+				RpLogLine res = new RpLogLine(matcher.group(1), matcher
+						.group(3), matcher.group(4), matcher.group(2));
+				return res;
+
+			}
 		}
-		Matcher matcher = LINE_SPLIT.matcher(line);
-		if(matcher.find()) {
-			RpLogLine res = new RpLogLine(matcher.group(1), matcher.group(2),
-					matcher.group(3), false);
-			return res;
+		{
+			Matcher matcher = LONGNAME_LINE_SPLIT.matcher(line);
+
+			if (matcher.find()) {
+//				System.out.println(":" + matcher.group(1) + ":" +  matcher.group(2) + ":" +  matcher.group(3) + ":");
+				RpLogLine res = new RpLogLine(matcher.group(1), matcher
+						.group(2), matcher.group(3), false);
+				return res;
+			}
 		}
+		
+		{
+			Matcher matcher = LINE_SPLIT.matcher(line);
+			if (matcher.find()) {
+				RpLogLine res = new RpLogLine(matcher.group(1), matcher
+						.group(2), matcher.group(3), false);
+				return res;
+			}
+		}
+
+		System.out.println("Not Matches line:" + line);
+		
 		
 		return null;
 	}

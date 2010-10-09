@@ -95,7 +95,6 @@ public class LogCleanerTest {
 		"[03:11:49]  Nadine Nozaki stats pulling the wolf form the bar.\n" +
 		"[03:12:38]  serendipity Savira pats the bar stool next to her and whispers to Sam, \"Come and sit\"\n" +
 		"[03:12:47]  Samantha Linnaeus' eyes are wide, \"How have you been Seren?\"\n" +
-		"[03:12:57]  CCS - MTR - 1.0.2: You have called for GM assistance\n" +
 		"[03:12:59]  Silver Opaque turns and looks at samantha, \"hello there\" a twinkle plays in my eyes\n" +
 		"[03:13:28]  Nadine Nozaki takes teh weposn form the wolf and tosses the body into the river\n" +
 		"[03:13:42]  Xerxis Rodenberger nods excusingly to Sam:\"I'm sorry. Its usually not that violent here\"\n" +
@@ -182,7 +181,17 @@ public class LogCleanerTest {
 		String cleaned = log.getClean();
 		assertEquals(expected, cleaned);
 	}
-	
+	@Test
+	public void testClean7() {
+		String text = "[2010-10-02 12:07:17]  Xerxis Rodenberger: What you mean?\n"+
+			"[2010-10-02 12:07:18]  CCS - MTR - 1.0.2: Press 434 to continue playing\n"+
+			"[2010-10-02 12:07:23]  Nadine Nozaki nods, Taking the connfession, You will be put on trial, charge of murder\n";
+		String expected = "[2010-10-02 12:07:17]  Xerxis Rodenberger: What you mean?\n"+
+			"[2010-10-02 12:07:23]  Nadine Nozaki nods, Taking the connfession, You will be put on trial, charge of murder\n";
+		LogCleaner log = new LogCleaner(text);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
 	@Test
 	public void testDuration() {
 		LogCleaner log = new LogCleaner(testLog);
@@ -253,6 +262,9 @@ public class LogCleanerTest {
 		
 		helpTestLineSplit("[2010-10-02 11:41:37]  Draw distance set to: 0m\n",
 				"2010-10-02 11:41:37", "Draw distance set to", "0m");
+		
+		helpTestLineSplit("[2010-10-02 12:06:59]  Varthaer Darkmatter shouts: I CONFESS OF NOTHING.\n",
+				"2010-10-02 12:06:59", "Varthaer Darkmatter", "I CONFESS OF NOTHING.");
 	}
 	
 	@Test

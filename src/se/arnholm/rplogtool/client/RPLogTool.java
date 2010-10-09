@@ -22,6 +22,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class RPLogTool implements EntryPoint {
+	private static final int LINESSMALLWINDOW = 18;
+	private static final int LINESBIGWINDOW = 18;
+
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -43,8 +46,13 @@ public class RPLogTool implements EntryPoint {
 		final Button sendButton = new Button("Send");
 		final TextArea logArea = new TextArea();
 		logArea.setText("Second Life Log....");
-		logArea.setVisibleLines(30);
+		logArea.setVisibleLines(LINESBIGWINDOW);
 		logArea.setCharacterWidth(80);
+		final TextArea rpLog = new TextArea();
+		rpLog.setText("");
+		rpLog.setVisibleLines(LINESSMALLWINDOW);
+		rpLog.setCharacterWidth(80);
+		
 		
 		final Label errorLabel = new Label();
 
@@ -55,15 +63,15 @@ public class RPLogTool implements EntryPoint {
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("logAreaContainer").add(logArea);
 		RootPanel.get("sendButtonContainer").add(sendButton);
-		RootPanel.get("errorLabelContainer").add(errorLabel);
-
+		RootPanel.get("rpLogContainer").add(sendButton);
+		RootPanel.get("errorLabelContainer").add(rpLog);
 		// Focus the cursor on the name field when the app loads
 		logArea.setFocus(true);
 		logArea.selectAll();
 
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Remote Procedure Call");
+		dialogBox.setText("Information");
 //		dialogBox.setWidth("90em");
 		dialogBox.setAnimationEnabled(true);
 		final Button closeButton = new Button("Close");
@@ -76,7 +84,7 @@ public class RPLogTool implements EntryPoint {
 //		dialogVPanel.setWidth("80em");
 //		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
 //		dialogVPanel.add(textToServerLabel);
-		dialogVPanel.add(new HTML("<br><b>Modfified log:</b>"));
+//		dialogVPanel.add(new HTML("<br><b>Modfified log:</b>"));
 		dialogVPanel.add(serverResponseLabel);
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(closeButton);
@@ -90,7 +98,15 @@ public class RPLogTool implements EntryPoint {
 				sendButton.setFocus(true);
 			}
 		});
+		class CloseHandler implements ClickHandler {
 
+			@Override
+			public void onClick(ClickEvent event) {
+				logArea.setVisibleLines(LINESBIGWINDOW);
+				rpLog.setVisibleLines(LINESSMALLWINDOW);
+			}
+			
+		}
 		// Create a handler for the sendButton and nameField
 		class MyHandler implements ClickHandler, KeyUpHandler {
 			/**
@@ -142,10 +158,15 @@ public class RPLogTool implements EntryPoint {
 								dialogBox.setText("Roleplay log");
 								serverResponseLabel
 										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(result);
+								serverResponseLabel.setHTML("Translated OK.<br>");
+								rpLog.setText(result);
+								rpLog.setVisibleLines(LINESBIGWINDOW);
+								logArea.setVisibleLines(LINESSMALLWINDOW);
 								dialogBox.center();
-								dialogBox.setWidth("750px");
+//								dialogBox.setWidth("750px");
 								closeButton.setFocus(true);
+								CloseHandler closeHandler = new CloseHandler();
+								closeButton.addClickHandler(closeHandler );
 							}
 						});
 			}

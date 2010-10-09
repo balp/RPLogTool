@@ -25,21 +25,22 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		userAgent = escapeHtml(userAgent);
 		LogCleaner cleaner = new LogCleaner(log);
 		log = cleaner.getClean();
-		log = log.replaceAll("\n", "<br>\n");
+//		log = log.replaceAll("\n", "<br>\n");
 		
-		String result = "Roleplay Log:<br>";
-		result += "----------------------------------------------------------------<br>\n";
-		result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"<br>\n";
+		String result = "Roleplay Log:\n";
+		result += "----------------------------------------------------------------\n";
+		result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"\n";
 		Set<String> players = cleaner.getPartisipants();
 		for(String player: players) {
 			PlayerInfo info = cleaner.getPlayerInfo(player);
-			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"<br>\n"; 
+			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"\n"; 
 //			result += player + ": " +"<br>\n"; 
 		}
-		result += "----------------------------------------------------------------<br>\n";
+		result += "----------------------------------------------------------------\n";
 		result += log; 
-		result += "----------------------------------------------------------------<br>\n";
-		result += "<strong>RPLogTool ©2010 Balp Allen</strong><br>" + serverInfo + ".<br>";
+		result += "----------------------------------------------------------------\n";
+		result += "RPLogTool ©2010 Balp Allen: " + serverInfo + ".\n";
+//		log = log.replaceAll("\n", "<br>\n");
 		return result;
 	}
 

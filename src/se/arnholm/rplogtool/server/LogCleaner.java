@@ -59,6 +59,9 @@ public class LogCleaner {
 					if(line.getCCSText().startsWith("CCS SYSTEM MESSAGE:")) {
 						continue;
 					}
+					if(line.getCCSText().endsWith("to continue playing")) {
+						continue;
+					}
 				}
 				if(line.getAction().startsWith("((") && line.getAction().endsWith("))")) {
 					continue;
@@ -72,6 +75,9 @@ public class LogCleaner {
 //				System.out.println("...");
 				String who = line.getName();
 				if(who.startsWith("(empty)")) {
+					continue;
+				}
+				if(who.startsWith("You have")) {
 					continue;
 				}
 				if(who.equals("Draw distance set to")) {

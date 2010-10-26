@@ -2,6 +2,9 @@ package se.arnholm.rplogtool.shared;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Set;
 import java.util.Vector;
 
@@ -276,6 +279,33 @@ public class LogCleanerTest {
 		assertEquals(" MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.", s1.getAction());
 		assertTrue(s1.isCCS());
 		assertEquals("CCS SYSTEM MESSAGE: Respec on Demand Feature: Should become available on your player profile today or at latest tommorrow, there are some kinks in the Secure XP Transfer System we are still working out and that may take a few days longer. Thank you for your patience and understanding as we get these free features developed for you.", s1.getCCSText());
+		
+	}
+
+	private String readFile(String file) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = null;
+		StringBuilder stringBuilder = new StringBuilder();
+		String ls = System.getProperty("line.separator");
+		while ((line = reader.readLine()) != null) {
+			stringBuilder.append(line);
+			stringBuilder.append(ls);
+		}
+		return stringBuilder.toString();
+	}
+
+	 
+	@Test
+	public void testMalkMeeting() {
+		try {
+			String curDir = System.getProperty("user.dir"); 
+			String logText = readFile("malk-meeting.txt");
+			LogCleaner log = new LogCleaner(logText);
+			Duration expected = new Duration(2452000);
+			assertEquals(expected.getMillis(), log.getDuration().getMillis());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.joda.time.Duration;
 
-public class PlayerInfo {
+public class PlayerInfo implements Comparable<PlayerInfo> {
 	
 
 	private List<String> lines;
@@ -55,6 +55,11 @@ public class PlayerInfo {
 
 	public List<String> getLines() {
 		return lines;
+	}
+
+	@Override
+	public int compareTo(PlayerInfo o) {
+		return getDuration().compareTo(o.getDuration());
 	}
 
 }

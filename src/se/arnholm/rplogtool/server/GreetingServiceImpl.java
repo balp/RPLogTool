@@ -27,19 +27,29 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		log = cleaner.getClean();
 //		log = log.replaceAll("\n", "<br>\n");
 		
-		String result = "Roleplay Log:\n";
-		result += "----------------------------------------------------------------\n";
+		String result = 
+		"----------------------------------------------------------------\n"
+		+"Title:\n"
+		+"Date:\n"
+		+"Place:\n";
+		result += "Start Time:" + cleaner.getStartTime() +"\n";
+		result += "End Time:" + cleaner.getEndTime() +"\n";
 		result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"\n";
+		result += "----------------------------------------------------------------\n"
+		+"Major Players:\n";
 		Set<String> players = cleaner.getPartisipants();
 		for(String player: players) {
 			PlayerInfo info = cleaner.getPlayerInfo(player);
 			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"\n"; 
 //			result += player + ": " +"<br>\n"; 
 		}
-		result += "----------------------------------------------------------------\n";
-		result += log; 
+		result += "----------------------------------------------------------------\n"
+			+"Other Players (move players down here that have a smaller role):\n"
+			+"----------------------------------------------------------------\n";
+			result += log; 
 		result += "----------------------------------------------------------------\n";
 		result += "RPLogTool ©2010 Balp Allen: " + serverInfo + ".\n";
+		result += "http://rplogtool.appspot.com/";
 //		log = log.replaceAll("\n", "<br>\n");
 		return result;
 	}

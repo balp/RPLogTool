@@ -3,10 +3,15 @@ package se.arnholm.rplogtool.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +49,9 @@ public class LogCleaner {
 			while((str = reader.readLine()) != null) {
 
 				RpLogLine line = splitLine(str);
+				if(null == line) {
+					continue;
+				}
 				final String action = line.getAction();
 //				if(line.isCCS()) {
 //					System.out.println("In:\"" + str+ "\"");
@@ -118,8 +126,8 @@ public class LogCleaner {
 		long start = getTime(lines.firstElement());
 		long end = getTime(lines.lastElement());
 	 	
-		System.out.println("Duration between: " +start +":"+ lines.firstElement());
-		System.out.println("             and: " + end +":"+ lines.lastElement());
+//		System.out.println("Duration between: " +start +":"+ lines.firstElement());
+//		System.out.println("             and: " + end +":"+ lines.lastElement());
 
 		return new Duration(start, end);
 	}
@@ -149,15 +157,32 @@ public class LogCleaner {
 	public Set<String> getPartisipants() {
 		return players.keySet();
 	}
+	public List<PlayerInfo> entries() {
+		List<Entry<String,PlayerInfo>> list = new LinkedList<Entry<String,PlayerInfo>>(players.entrySet());
+		List<PlayerInfo> resultList = new LinkedList<PlayerInfo>();
+		Collections.sort(list, new Comparator<Entry<String,PlayerInfo>>() {
+			public int compare(Entry<String,PlayerInfo> o1, Entry<String,PlayerInfo> o2) {
+				Comparable<PlayerInfo> comparable = o1.getValue();
+				return comparable.compareTo(((Map.Entry<String,PlayerInfo>) (o2)).getValue());
+			}
+		});
 
+		return resultList;
+
+	}
+	
 	public PlayerInfo getPlayerInfo(String name) {
 		return players.get(name);
 	}
 
 	public static String formatTime(org.joda.time.Duration duration) {
-		return String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
+		return  String.format("%d:%02d", duration.toPeriod().getHours(), duration.toPeriod().getMinutes());
 	}
-
+	
+	public static String formatTime(long time) {
+		return String.format("%d:%02d", (int)time/60, (int)time%60);
+	}
+	
 	public static RpLogLine splitLine(String line) {
 		{
 			Matcher matcher = CCS_LINE_SPLIT.matcher(line);
@@ -188,10 +213,28 @@ public class LogCleaner {
 			}
 		}
 
-		System.out.println("Not Matches line:" + line);
+//		System.out.println("Not Matches line:" + line);
 		
 		
 		return null;
 	}
+
+	public String getStartTime() {
+		RpLogLine values = splitLine(lines.firstElement());
+		if(null != values) {
+			return values.getTime();
+		}
+		return "";
+	}
+
+	public String getEndTime() {
+		RpLogLine values = splitLine(lines.lastElement());
+		if(null != values) {
+			return values.getTime();
+		}
+		return "";
+	}
+
+
 
 }

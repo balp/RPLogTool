@@ -16,16 +16,19 @@ public class PlayerInfo implements Comparable<PlayerInfo> {
 	public PlayerInfo(String who) {
 		lines = new LinkedList<String>();
 		last = Long.MIN_VALUE;
-		first = Long.MAX_VALUE;
+		first = Long.MIN_VALUE;
 		player = who;
 	}
 
 	public void addLine(String line) {
 		lines.add(line);
 		long time = LogCleaner.getTime(line);
-		if(time < first) {
+		if(first == Long.MIN_VALUE) {
 //			System.out.println("addLine("+ line +"): first = " + time);
 			first = time;
+		}
+		if( time < first) {
+			time += 24*60*60*1000;
 		}
 		if(time > last) {
 //			System.out.println("addLine("+ line +"): last = " + time);
@@ -46,7 +49,12 @@ public class PlayerInfo implements Comparable<PlayerInfo> {
 	}
 
 	public Duration getDuration() {
-		return new Duration(getFirstTime(), getLastTime());
+		long firstTime = getFirstTime();
+		long lastTime = getLastTime();
+		if(lastTime < firstTime) {
+			lastTime += 24*60*60*1000;
+		}
+		return new Duration(firstTime, lastTime);
 	}
 
 	public int getNumberOfLines() {

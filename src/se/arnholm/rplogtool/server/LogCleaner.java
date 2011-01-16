@@ -125,9 +125,11 @@ public class LogCleaner {
 	public Duration getDuration() {
 		long start = getTime(lines.firstElement());
 		long end = getTime(lines.lastElement());
-	 	
-//		System.out.println("Duration between: " +start +":"+ lines.firstElement());
-//		System.out.println("             and: " + end +":"+ lines.lastElement());
+	 	if(end < start) {
+	 		end += 24*60*60*1000;
+	 	}
+		//System.out.println("Duration between: " +start +":"+ lines.firstElement());
+		//System.out.println("             and: " + end +":"+ lines.lastElement());
 
 		return new Duration(start, end);
 	}

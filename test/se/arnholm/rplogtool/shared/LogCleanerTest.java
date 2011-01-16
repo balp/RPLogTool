@@ -208,14 +208,36 @@ public class LogCleanerTest {
 		LogCleaner log = new LogCleaner(log2);
 		Duration expected = new Duration(1828000);
 		assertEquals(expected.getMillis(), log.getDuration().getMillis());
+	}
+	
+	String log3 = "[23:10]  Moon Falconer-Lectar (moon.falconer): hey what's happening?\n" +
+				  "[23:11]  Krager Megadon: levels his gun at the thing that just attacked him.. it had stpped moving.. he didn't know why.. ' I don;t know.. it leaped out of the assylum.. I jsut glanced inside and Nubs is on the ground.... it attacked Me I dunno wtf it is!~'\n" +
+				  "[00:16]  Krager Megadon: nudges Moon.. ' ok.. we nee to let her be for now.. until we get the needed Naturalistic Healers present.. for now theres nothing we can do.. unless you want to sit here and guard / watch her?..'\n" + 
+				  "[00:17]  Moon Falconer-Lectar (moon.falconer) stares at krager for a second and then grins\"Well, vamps and demons are like cousins so that's not surprising but i like to know why things work, not just say some words\"watches the blood drip and sighs\"Okay no, i'll wait outside, and wait for the creature. maybe if i can catch her alive, we can make her remove the spell\"\n";
+	
+	@Test
+	public void testDurationOverMidnight() {
+		LogCleaner log = new LogCleaner(log3);
+		Duration expected = new Duration(3960000);
+		assertEquals(expected.getMillis(), log.getDuration().getMillis());
+		Duration d = log.getPlayerInfo("Krager Megadon").getDuration();
+		assertEquals(3900000, d.getMillis());
 	}	
+	
 	@Test
 	public void testGetTime() {
 		assertEquals(11220000, LogCleaner.getTime("[03:07]  Nadine Nozaki ndos, \"Aint we all but Xerx human?\""));
 		assertEquals(83103000, LogCleaner.getTime("[2010-09-15 23:05:03]  Xerxis Rodenberger: See you"));
 		assertEquals(81275000, LogCleaner.getTime("[2010-09-15 22:34:35]  CCS - MTR - 1.0.2: Nadine Nozaki has entered a combative state\n"));
 	}
-	
+	@Test
+	public void testUserNames() {
+		LogCleaner log = new LogCleaner(log3);
+		Set<String> who = log.getPartisipants(); 
+		System.out.println("Test:" + who);
+		assertTrue("Krager Megadon should be in set", who.contains("Krager Megadon"));
+		assertTrue("Moon Falconer-Lectar (moon.falconer) should be in set", who.contains("Moon Falconer-Lectar (moon.falconer)"));
+	}	
 	@Test
 	public void testPlayers() {
 		LogCleaner log = new LogCleaner(testLog);
@@ -236,8 +258,8 @@ public class LogCleanerTest {
 		LogCleaner log = new LogCleaner(testLog);
 		List<PlayerInfo> people = log.entries();
 		Set<String> who = log.getPartisipants(); 
-//		System.out.println("Test:" + who);
-		assertTrue("Nadine should be in list", people.contains("Nadine Nozaki"));
+		System.out.println("Test:" + who);
+		assertTrue("Nadine should be in list", 	who.contains("Nadine Nozaki"));
 		assertEquals(11262000, log.getPlayerInfo("Nadine Nozaki").getFirstTime());
 		assertEquals(11631000, log.getPlayerInfo("Nadine Nozaki").getLastTime());
 		Duration d = log.getPlayerInfo("Nadine Nozaki").getDuration();

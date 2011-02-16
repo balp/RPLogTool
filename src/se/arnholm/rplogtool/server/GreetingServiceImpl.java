@@ -12,11 +12,87 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
 
-	public String greetServer(String input) throws IllegalArgumentException {
+	interface AnswerNote {
+		public String formatString(String serverInfo, String log, LogCleaner cleaner);
+	}
+	class MalkaStyle implements AnswerNote {
+		public String formatString(String serverInfo, String log, LogCleaner cleaner) {
+				String result = 
+				"----------------------------------------------------------------\n"
+				+"Title:\n"
+				+"Date:\n"
+				+"Place:\n";
+				result += "Start Time:" + cleaner.getStartTime() +"\n";
+				result += "End Time:" + cleaner.getEndTime() +"\n";
+				result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"\n";
+				result += "----------------------------------------------------------------\n"
+				+"Major Players:\n";
+				Set<String> players = cleaner.getPartisipants();
+				for(String player: players) {
+					PlayerInfo info = cleaner.getPlayerInfo(player);
+					result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"\n"; 
+		//			result += player + ": " +"<br>\n"; 
+				}
+				result += "----------------------------------------------------------------\n"
+					+"Other Players (move players down here that have a smaller role):\n"
+					+"----------------------------------------------------------------\n";
+					result += log; 
+				result += "----------------------------------------------------------------\n";
+				result += "RPLogTool ©2010 Balp Allen: " + serverInfo + ".\n";
+				result += "http://rplogtool.appspot.com/";
+				return result;
+			}
+		
+	}
+	class CrossRoadsStyle implements AnswerNote {
+		public String formatString(String serverInfo, String log, LogCleaner cleaner) {
+				String result = 
+				"----------------------------------------------------------------\n"
+				+"TITLE:\n"
+				+"<< Roleplay Title Here >>  << Date Here >>\n"
+				+"\n"
+				+"SUMMARY:\n"
+				+"<< Type a brief summary of the Roleplay here >>\n"
+				+"\n"
+				+"PARTICIPANTS:\n"
+				+"MAIN:\n"
+				+"<< List all the primary character players here, e.g. sort out minor players>>\n";
+				
+//				result += "Start Time:" + cleaner.getStartTime() +"\n";
+//				result += "End Time:" + cleaner.getEndTime() +"\n";
+//				result += "----------------------------------------------------------------\n"
+//				+"Major Players:\n";
+				Set<String> players = cleaner.getPartisipants();
+				for(String player: players) {
+					PlayerInfo info = cleaner.getPlayerInfo(player);
+					result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"\n"; 
+		//			result += player + ": " +"<br>\n"; 
+				}
+				result += "MINOR:\n"
+					+"<< List all the minor character players here >>\n"
+					+"<< Other Players (move players down here that have a smaller role):\n"
+					+"\n";
+				result += "DURATION:\n" + LogCleaner.formatTime(cleaner.getDuration()) +"\n";
+				result += "---------- ROLEPLAY LOG (paste the roleplay under this line ----------\n";
+				result += log; 
+				result += "----------------------------------------------------------------\n";
+				result += "RPLogTool ©2010 Balp Allen: " + serverInfo + ".\n";
+				result += "http://rplogtool.appspot.com/";
+				return result;
+			}
+		
+	}
+	
+	@Override
+	public String greetServer(String input, String template)
+			throws IllegalArgumentException {
 		// Verify that the input is valid. 
-		
-		
-
+		AnswerNote style;
+		if(template.equals("Crossroads Style")) {
+			style = new CrossRoadsStyle();
+		} else {
+			style = new MalkaStyle();
+		}
 		String serverInfo = getServletContext().getServerInfo();
 		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
 
@@ -27,29 +103,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		log = cleaner.getClean();
 //		log = log.replaceAll("\n", "<br>\n");
 		
-		String result = 
-		"----------------------------------------------------------------\n"
-		+"Title:\n"
-		+"Date:\n"
-		+"Place:\n";
-		result += "Start Time:" + cleaner.getStartTime() +"\n";
-		result += "End Time:" + cleaner.getEndTime() +"\n";
-		result += "Roleplay duration: " + LogCleaner.formatTime(cleaner.getDuration()) +"\n";
-		result += "----------------------------------------------------------------\n"
-		+"Major Players:\n";
-		Set<String> players = cleaner.getPartisipants();
-		for(String player: players) {
-			PlayerInfo info = cleaner.getPlayerInfo(player);
-			result += player + ": " + LogCleaner.formatTime(info.getDuration()) +"\n"; 
-//			result += player + ": " +"<br>\n"; 
-		}
-		result += "----------------------------------------------------------------\n"
-			+"Other Players (move players down here that have a smaller role):\n"
-			+"----------------------------------------------------------------\n";
-			result += log; 
-		result += "----------------------------------------------------------------\n";
-		result += "RPLogTool ©2010 Balp Allen: " + serverInfo + ".\n";
-		result += "http://rplogtool.appspot.com/";
+		String result = style.formatString(serverInfo, log, cleaner);
 //		log = log.replaceAll("\n", "<br>\n");
 		return result;
 	}

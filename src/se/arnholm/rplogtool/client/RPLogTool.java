@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -53,6 +54,10 @@ public class RPLogTool implements EntryPoint {
 		rpLog.setVisibleLines(LINESSMALLWINDOW);
 		rpLog.setCharacterWidth(80);
 		
+		final ListBox template = new ListBox();
+		template.addItem("Malka Style");
+		template.addItem("Crossroads Style");
+		template.setVisibleItemCount(1);
 		
 		final Label errorLabel = new Label();
 
@@ -63,8 +68,9 @@ public class RPLogTool implements EntryPoint {
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("logAreaContainer").add(logArea);
 		RootPanel.get("sendButtonContainer").add(sendButton);
-		RootPanel.get("rpLogContainer").add(sendButton);
-		RootPanel.get("errorLabelContainer").add(rpLog);
+		RootPanel.get("templateContainer").add(template);
+		RootPanel.get("rpLogContainer").add(rpLog);
+		RootPanel.get("errorLabelContainer").add(errorLabel);
 		// Focus the cursor on the name field when the app loads
 		logArea.setFocus(true);
 		logArea.selectAll();
@@ -136,13 +142,14 @@ public class RPLogTool implements EntryPoint {
 					errorLabel.setText("Please enter at least four characters");
 					return;
 				}
-
+				
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
+				String templateName = template.getValue(template.getSelectedIndex());
 				greetingService.greetServer(textToServer,
-						new AsyncCallback<String>() {
+						templateName , new AsyncCallback<String>() {
 							public void onFailure(Throwable caught) {
 								// Show the RPC error message to the user
 								dialogBox

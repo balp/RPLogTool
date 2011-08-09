@@ -84,7 +84,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 	}
 	
 	@Override
-	public String greetServer(String input, String template)
+	public String greetServer(String input, String template, Boolean expandMe, Boolean removeCCS)
 			throws IllegalArgumentException {
 		// Verify that the input is valid. 
 		AnswerNote style;
@@ -99,7 +99,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		String log = escapeHtml(input);
 		userAgent = escapeHtml(userAgent);
-		LogCleaner cleaner = new LogCleaner(log);
+		LogCleaner cleaner = new LogCleaner(log, expandMe, removeCCS);
 		log = cleaner.getClean();
 //		log = log.replaceAll("\n", "<br>\n");
 		

@@ -22,17 +22,21 @@ public class LogCleaner {
 	private String cleanString;
 	private Vector<String> lines;
 	private Map<String,PlayerInfo> players;
+	private Boolean expandMe;
+	private Boolean removeCCS;
 	private static final Pattern LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+(\\w+\\s+\\w+)([\\s+':].+)$");
 	private static final Pattern LONGNAME_LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+([^:]+):\\s*(.+)$");
-	private static final Pattern CCS_LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+CCS - MTR - 1.0.2:\\s+((\\w+\\s+\\w+)([\\s+':].+))$");
+	private static final Pattern CCS_LINE_SPLIT = Pattern.compile("^\\s*\\[([^\\]]+)\\]\\s+CCS - MTR - 1.\\d+.\\d+:\\s+((\\w+\\s+\\w+)([\\s+':].+))$");
 	private static final Pattern TIME_SECONDS = Pattern.compile("(\\d+):(\\d+):(\\d+)");
 	private static final Pattern TIME_MINUTES = Pattern.compile("(\\d+):(\\d+)");
 	
 	
-	public LogCleaner(String text)
+	public LogCleaner(String text, Boolean expandMe, Boolean removeCCS)
 	{
 		lines = new Vector<String>();
 		this.text = text;
+		this.expandMe = expandMe;
+		this.removeCCS = removeCCS;
 		players = new HashMap<String,PlayerInfo>();
 		cleanString = process();
 		
@@ -71,6 +75,9 @@ public class LogCleaner {
 						continue;
 					}
 				}
+				if(removeCCS && line.isCCS()) {
+					continue;
+				}
 				if(line.getAction().startsWith("((") && line.getAction().endsWith("))")) {
 					continue;
 				}
@@ -101,6 +108,10 @@ public class LogCleaner {
 					}
 					freq.addLine(str);
 					players.put(who, freq);
+				}
+				if(expandMe && line.getAction().startsWith("/me ")) {
+					// Remove ": /me" from str
+					str = str.replaceFirst(": /me", "");
 				}
 //				System.out.println("Adding:" + who + ":" + str);
 				lines.add(str);

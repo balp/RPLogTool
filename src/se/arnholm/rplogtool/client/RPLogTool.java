@@ -10,11 +10,13 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimpleCheckBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -59,6 +61,14 @@ public class RPLogTool implements EntryPoint {
 		template.addItem("Crossroads Style");
 		template.setVisibleItemCount(1);
 		
+		final CheckBox expandMe = new CheckBox();
+		expandMe.setName("Expand /me");
+		expandMe.setText("Expand /me");
+		
+		final CheckBox removeCCS = new CheckBox();
+		removeCCS.setName("Remove CCS");
+		removeCCS.setText("Remove CCS");
+		
 		final Label errorLabel = new Label();
 
 		// We can add style names to widgets
@@ -69,6 +79,8 @@ public class RPLogTool implements EntryPoint {
 		RootPanel.get("logAreaContainer").add(logArea);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("templateContainer").add(template);
+		RootPanel.get("optionsContainer").add(expandMe);
+		RootPanel.get("optionsContainer").add(removeCCS);
 		RootPanel.get("rpLogContainer").add(rpLog);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 		// Focus the cursor on the name field when the app loads
@@ -119,7 +131,7 @@ public class RPLogTool implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			public void onClick(ClickEvent event) {
-				sendNameToServer();
+				sendLogToServer();
 			}
 
 			/**
@@ -127,14 +139,14 @@ public class RPLogTool implements EntryPoint {
 			 */
 			public void onKeyUp(KeyUpEvent event) {
 				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					sendNameToServer();
+					sendLogToServer();
 				}
 			}
 
 			/**
 			 * Send the name from the nameField to the server and wait for a response.
 			 */
-			private void sendNameToServer() {
+			private void sendLogToServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
 				String textToServer = logArea.getText();
@@ -149,7 +161,7 @@ public class RPLogTool implements EntryPoint {
 				serverResponseLabel.setText("");
 				String templateName = template.getValue(template.getSelectedIndex());
 				greetingService.greetServer(textToServer,
-						templateName , new AsyncCallback<String>() {
+						templateName , expandMe.getValue(), removeCCS.getValue(), new AsyncCallback<String>() {
 							public void onFailure(Throwable caught) {
 								// Show the RPC error message to the user
 								dialogBox

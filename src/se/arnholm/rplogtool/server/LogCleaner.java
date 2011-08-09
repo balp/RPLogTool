@@ -88,6 +88,9 @@ public class LogCleaner {
 				if(who.startsWith("You have")) {
 					continue;
 				}
+				if(who.startsWith("Second Life")) {
+					continue;
+				}
 				if(who.equals("Draw distance set to")) {
 					continue;
 				}

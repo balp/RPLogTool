@@ -115,7 +115,48 @@ public class LogCleanerTest {
 		assertEquals(expected, cleaned);
 		//		fail("Not yet implemented");
 	}
-	
+	@Test
+	public void testNewStyle()
+	{
+		String logText  = "[2011/08/08 11:51:31]  Nadine Nozaki: /me smiles and ndos, waves to the people, \"Greetings.\"\n" +
+				"[2011/08/08 11:51:54]  Second Life: Starphilly Flannery is offline.\n" +
+				"[2011/08/08 11:52:26]  Second Life: ZZR1101 Skall is online.\n" +
+				"[2011/08/08 11:52:31]  Mr Gwaed (Gwaed): smiles and nods his head \"Lady nadine \" he perks a bit \"I am learning of this mans mystic powers, he is very good, but needs more time to develop\" he turns to Lord Bishop \"Perhaps you Lord could give the young man some encouragement in his mystic studies\"\n" +
+				"[2011/08/08 11:53:08]  aliantha Brezoianu: Goodevening (non com) you two, are you sane or still insane?\"\n" +
+				"[2011/08/08 11:53:22]  bishop Haiku: /me grins at gwaed.... it would be my pleasure\n" +
+				"[2011/08/08 11:53:38]  Nadine Nozaki: /me giggles at ali, \"We are always sane why do you ask ali?\"\n" +
+				"[2011/08/08 11:54:10]  Nadine Nozaki: /me smiels \"a magician, i love to see those cute bunnies:\"\n" +
+				"[2011/08/08 11:54:14]  aliantha Brezoianu: \"Well the other day you were quite insane .. and were marrying for the first time and they eyar was um 1860\"\n" +
+				"[2011/08/08 11:54:27]  Cinox: /me looks betweent he both of them, getting curious to what they were planning.\n" +
+				"[2011/08/08 11:54:47]  Second Life: Chalice Yao is offline.\n" +
+				"[2011/08/08 11:54:52]  Second Life: Tour Spoonhammer is online.\n" +
+				"[2011/08/08 11:55:03]  aliantha Brezoianu: you both non com)\n" +
+				"[2011/08/08 11:55:07]  Nadine Nozaki: /me giggles \"I can't help that 1860 and my marrige still fels like yeasterday, can I\n" +
+				"[2011/08/08 11:55:10]  Second Life: Rondevous Giano is online.\n" +
+				"[2011/08/08 11:55:40]  Nadine Nozaki: (( I see my meter xerx is afk, sure it aint Exoctics you see as mine?\" ))\n" +
+				"[2011/08/08 11:55:57]  Honeygurl Starfall: :/\n" +
+				"[2011/08/08 11:56:07]  Second Life: Chalice Yao is online.\n" +
+				"[2011/08/08 11:56:24]  CCS - MTR - 1.0.4: Nadine Nozaki has entered a non-combative state\n" +
+				"[2011/08/08 11:56:26]  CCS - MTR - 1.0.4: Nadine Nozaki has entered a combative state\n" +
+				"[2011/08/08 11:57:47]  CCS - MTR - 1.0.4: Exoticqt4you Resident has entered a combative state\n";
+		String expected  = "[2011/08/08 11:51:31]  Nadine Nozaki: /me smiles and ndos, waves to the people, \"Greetings.\"\n" +
+				"[2011/08/08 11:52:31]  Mr Gwaed (Gwaed): smiles and nods his head \"Lady nadine \" he perks a bit \"I am learning of this mans mystic powers, he is very good, but needs more time to develop\" he turns to Lord Bishop \"Perhaps you Lord could give the young man some encouragement in his mystic studies\"\n" +
+				"[2011/08/08 11:53:08]  aliantha Brezoianu: Goodevening (non com) you two, are you sane or still insane?\"\n" +
+				"[2011/08/08 11:53:22]  bishop Haiku: /me grins at gwaed.... it would be my pleasure\n" +
+				"[2011/08/08 11:53:38]  Nadine Nozaki: /me giggles at ali, \"We are always sane why do you ask ali?\"\n" +
+				"[2011/08/08 11:54:10]  Nadine Nozaki: /me smiels \"a magician, i love to see those cute bunnies:\"\n" +
+				"[2011/08/08 11:54:14]  aliantha Brezoianu: \"Well the other day you were quite insane .. and were marrying for the first time and they eyar was um 1860\"\n" +
+				"[2011/08/08 11:54:27]  Cinox: /me looks betweent he both of them, getting curious to what they were planning.\n" +
+				"[2011/08/08 11:55:03]  aliantha Brezoianu: you both non com)\n" +
+				"[2011/08/08 11:55:07]  Nadine Nozaki: /me giggles \"I can't help that 1860 and my marrige still fels like yeasterday, can I\n" +
+				"[2011/08/08 11:55:57]  Honeygurl Starfall: :/\n" +
+				"[2011/08/08 11:56:24]  CCS - MTR - 1.0.4: Nadine Nozaki has entered a non-combative state\n" +
+				"[2011/08/08 11:56:26]  CCS - MTR - 1.0.4: Nadine Nozaki has entered a combative state\n" +
+				"[2011/08/08 11:57:47]  CCS - MTR - 1.0.4: Exoticqt4you Resident has entered a combative state\n";
+		LogCleaner log = new LogCleaner(logText);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
 	
 	@Test
 	public void testCleanLog2() {

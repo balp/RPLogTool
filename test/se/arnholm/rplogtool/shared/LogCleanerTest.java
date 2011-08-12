@@ -291,6 +291,27 @@ public class LogCleanerTest {
 		assertEquals(expected, cleaned);
 	}
 	@Test
+	public void testCleanBadLine() {
+		String text = "[2010-10-02 12:07:17]  Xerxis Rodenberger: What you mean?\n"+
+				"What\n"+
+				"[2010-10-02 12:07:23]  Nadine Nozaki nods, Taking the connfession, You will be put on trial, charge of murder\n";
+		String expected = "[2010-10-02 12:07:17]  Xerxis Rodenberger: What you mean?\n"+
+				"[2010-10-02 12:07:23]  Nadine Nozaki nods, Taking the connfession, You will be put on trial, charge of murder\n";
+		LogCleaner log = new LogCleaner(text, false, false);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+	}
+	@Test
+	public void testEmptyFirstLine() {
+		String text = "Second Life Log....\n";
+		String expected = "";
+		LogCleaner log = new LogCleaner(text, false, false);
+		String cleaned = log.getClean();
+		assertEquals(expected, cleaned);
+		assertEquals("", log.getStartTime());
+		assertEquals(Duration.ZERO, log.getDuration());
+	}
+	@Test
 	public void testDuration() {
 		LogCleaner log = new LogCleaner(testLog, false, false);
 		Duration expected = new Duration(431000);

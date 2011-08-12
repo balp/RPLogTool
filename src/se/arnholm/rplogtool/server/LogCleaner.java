@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
 import java.util.Map.Entry;
@@ -137,15 +138,19 @@ public class LogCleaner {
 	}
 
 	public Duration getDuration() {
-		long start = getTime(lines.firstElement());
-		long end = getTime(lines.lastElement());
-	 	if(end < start) {
-	 		end += 24*60*60*1000;
-	 	}
-		//System.out.println("Duration between: " +start +":"+ lines.firstElement());
-		//System.out.println("             and: " + end +":"+ lines.lastElement());
+		try {
+			long start = getTime(lines.firstElement());
+			long end = getTime(lines.lastElement());
+			if(end < start) {
+				end += 24*60*60*1000;
+			}
+			//System.out.println("Duration between: " +start +":"+ lines.firstElement());
+			//System.out.println("             and: " + end +":"+ lines.lastElement());
 
-		return new Duration(start, end);
+			return new Duration(start, end);
+		} catch (NoSuchElementException e) {
+			return Duration.ZERO;
+		}
 	}
 
 	public static long getTime(String logLine) {
@@ -236,17 +241,27 @@ public class LogCleaner {
 	}
 
 	public String getStartTime() {
-		RpLogLine values = splitLine(lines.firstElement());
-		if(null != values) {
-			return values.getTime();
+		RpLogLine values;
+		try {
+			values = splitLine(lines.firstElement());
+
+			if(null != values) {
+				return values.getTime();
+			}
+		} catch (NoSuchElementException e) {
+			// Will return empty string when no first line
 		}
 		return "";
 	}
 
 	public String getEndTime() {
-		RpLogLine values = splitLine(lines.lastElement());
-		if(null != values) {
-			return values.getTime();
+		try {
+			RpLogLine values = splitLine(lines.lastElement());
+			if(null != values) {
+				return values.getTime();
+			}
+		} catch (NoSuchElementException e) {
+			// Will return empty string when no last line
 		}
 		return "";
 	}
